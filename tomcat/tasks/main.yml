@@ -1,2 +1,17 @@
 ---
 # tasks file for tomcat
+- name: Install Tomcat
+  hosts: client
+  become: true
+  vars:
+    tomcat_url: "https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.18/bin/apache-tomcat-10.1.18.tar.gz"
+    tomcat: "apache-tomcat-10.1.18"
+  tasks:
+    - name: Adding a "tomcat" user
+      user: name=tomcat shell=/bin/false home=/opt/tomcat state=present
+    - name: Installing default jdk
+      apt: update_cache=yes name=default-jdk state=present
+    - name: Downloading tomcat package
+      get_url: url="{{tomcat_url}}" dest=/opt/tomcat
+    - name: Unpacking tomcat package
+      unarchive: src="/opt/tomcat/{{tomcat}}.tar.gz" dest=/opt/tomcat remote_src=yes
